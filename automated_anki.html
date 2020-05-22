@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Automated Seach of Sentences</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script>
+    
+        // const getSentences = (word) => {
+        //     const url = 'https://www.wordreference.com/enpt/' + word;
+        //     const response = await fetch(url);
+        //     return response;
+        // }
+        
+        const loadingPage = () => {
+            document.getElementById('body').innerHTML = 'Loading...';
+        }
+
+        const main = async () => {
+            loadingPage();
+
+            const url = 'https://www.wordreference.com/enpt/home';
+            const response = await fetch(url);
+            const text = await response.text();
+
+            console.log(typeof(text));
+            // let arr = text.match(/<table(.|\n)*/g);
+            // try {
+            //     console.log(`Arr legth: ${arr.length}`);
+            //     arr.forEach(element => {
+            //    console.log(element); 
+            // });
+            // }catch{
+            //     console.log(arr);
+            // }
+
+            const html = new DOMParser().parseFromString(text, "text/html");
+            const tableWRD = html.getElementsByClassName('WRD')[0];
+            
+            console.log(tableWRD.getElementsByClassName('FrWrd'))
+            console.log(tableWRD.getElementsByClassName('ToWrd'))
+            
+            console.log(tableWRD.getElementsByTagName('tr'));
+
+        }
+
+    </script>
+</head>
+<body id="body">
+    <p>Put the words down here and press start do search to generate anki cards</p>
+    <textarea id="words"></textarea>
+    <p></p>
+    <button id="start" onclick="main()">Start!</button>
+</body>
+</html>
