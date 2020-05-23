@@ -7,54 +7,15 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
     <script>
-        // const getSentences = async (word) => {
-        //     const url = 'https://www.wordreference.com/enpt/' + word;
-        //     const response = await fetch(url);
-        //     const text = await response.text();
-        //     const html = new DOMParser().parseFromString(text, "text/html");
-            
-        //     const tableWRD = html.getElementsByClassName('WRD')[0]; // what we want is in this table
-        //     const rows = tableWRD.getElementsByTagName('tr');
-        //     // console.log(rows);
-        //     for(let i in rows) {
-        //         const row = rows[i];   
-        //         if(row.className != 'even' && row.className != 'odd') continue;
 
-        //         const tds = row.getElementsByTagName('td');
-
-        //         if(row.id != '') {
-        //             for(let i in tds) {
-        //                 const td = tds[i];
-        //                 if(td.className == 'FrWrd') {
-        //                     console.log('FrWrd');
-        //                     console.log(td.firstChild.firstChild);
-        //                 } else if(td.className == 'Wrd') {
-        //                     console.log('None');
-        //                     console.log(td.firstChild);
-        //                 } else {
-        //                     console.log('ToWrd');
-        //                     console.log(td.firstChild);
-        //                 }
-        //             }
-        //         } else {
-        //             console.log('else');
-        //             console.log(tds[1].firstChild);
-        //         }
-        //     }
-        // }
-
-        const getFirstRowElement(firstRow) {
-            let arr = [];
+        const getFirstRowElement = async(firstRow) => {
             const tdsFirstEvenRow = firstRow.getElementsByTagName('td');
-            console.log(tdsFirstEvenRow[0].firstChild.innerText); //word
-            arr += [tdsFirstEvenRow[0].firstChild.innerText]
-            console.log(tdsFirstEvenRow[1].innerText); //sinonimos
-            arr += [tdsFirstEvenRow[1].innerText]
-
+            const word = await tdsFirstEvenRow[0].firstChild.innerText;
+            const sinonimo = await tdsFirstEvenRow[1].innerText;
             const childsThirdTd = tdsFirstEvenRow[2].childNodes;
-            console.log(childsThirdTd[0].nodeValue);
-            arr += [childsThirdTd[0].nodeValue]
-            return arr;
+            const significado = await childsThirdTd[0].nodeValue;
+
+            return {word, sinonimo, significado};
         }
 
         const getSentences = async (word) => {
@@ -68,35 +29,67 @@
 
             let i = 0;
             while(rows[i].className != 'even') i++;
-            const firstEvenRow = rows[i];
-            const tdsFirstEvenRow = rows[i].getElementsByTagName('td');
-            console.log(tdsFirstEvenRow[0].firstChild.innerText); //word
-            console.log(tdsFirstEvenRow[1].innerText); //sinonimos
-
-            const childsThirdTd = tdsFirstEvenRow[2].childNodes;
-            console.log(childsThirdTd[0].nodeValue);
 
 
+            let wordObj = await getFirstRowElement(rows[i]); 
 
-            // console.log(rows[i+1].getElementsByTagName('td')[1].innerText.replace(word, '<b>' + word + '</b>'));
-            console.log(rows[i+1].getElementsByTagName('td')[rows[i+1].getElementsByTagName('td').length - 1]);
+            while(rows[i].getElementsByClassName('FrEx').length == 0) i++;
+            wordObj.sentence = rows[i].getElementsByClassName('FrEx')[0].innerText.replace(wordObj.word, `<b>${wordObj.word}</b>`);
 
+
+            const tooltip = html.querySelectorAll('.tooltip.pronWidget');
+            // console.log(tooltip);
+
+            for(let j = 0; j < tooltip.length; j++) {
+                if(tooltip[j].childNodes == undefined) continue;
+                if(tooltip[j].childNodes[0].nodeValue == 'US:') {
+                    wordObj.pronounce = tooltip[j+1].childNodes[1].nodeValue
+                }
+            }
+
+            return wordObj;
+            // console.log( wordObj );
 
         }
         
         const loadingPage = () => document.getElementById('body').innerHTML = 'Loading...';
 
-        const getListOfWords = () => {
-            // TODO
-            return ['home', 'enough', 'people'];
+        const getListOfWords = async () => {
+            const text = await document.getElementById('words');
+            return text.value.split('\n');
         }
 
-        const main = () => {
-            loadingPage();
-            const words = getListOfWords();
-            words.forEach(word => {
-                getSentences(word);
+        const showResult = (arr, err) => {
+            let htmlResponse = '<h1>Palavras bem sucedidas</h1>';
+            console.log(arr);
+            arr.forEach(element => {
+                htmlResponse += element.sentence + '</br>' ;
+                htmlResponse += '<b>' + element.word + ' ' + element.pronounce + '</b></br>';
+                htmlResponse += element.sinonimo + ' ' + element.significado + '</br>'
+                htmlResponse += '</br>'
             });
+            htmlResponse += '<h1>Palavras mal sucedidas</h1>';
+            err.forEach(element => {
+                htmlResponse += element + '</br>'
+            });
+            document.getElementById('body').innerHTML = htmlResponse;
+        }
+
+        const main = async () => {
+            const words = await getListOfWords();
+            loadingPage();
+                
+            let arr = [];
+            let err = [];
+            for(let i = 0; i < words.length; i++) {
+                try {
+                    arr.push(await getSentences(words[i]));
+                } catch {
+                    err.push(words[i]);
+                }
+            }
+
+            showResult(arr, err);
         }
 
     </script>
