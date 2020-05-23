@@ -7,43 +7,96 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
     <script>
-    
-        // const getSentences = (word) => {
+        // const getSentences = async (word) => {
         //     const url = 'https://www.wordreference.com/enpt/' + word;
         //     const response = await fetch(url);
-        //     return response;
+        //     const text = await response.text();
+        //     const html = new DOMParser().parseFromString(text, "text/html");
+            
+        //     const tableWRD = html.getElementsByClassName('WRD')[0]; // what we want is in this table
+        //     const rows = tableWRD.getElementsByTagName('tr');
+        //     // console.log(rows);
+        //     for(let i in rows) {
+        //         const row = rows[i];   
+        //         if(row.className != 'even' && row.className != 'odd') continue;
+
+        //         const tds = row.getElementsByTagName('td');
+
+        //         if(row.id != '') {
+        //             for(let i in tds) {
+        //                 const td = tds[i];
+        //                 if(td.className == 'FrWrd') {
+        //                     console.log('FrWrd');
+        //                     console.log(td.firstChild.firstChild);
+        //                 } else if(td.className == 'Wrd') {
+        //                     console.log('None');
+        //                     console.log(td.firstChild);
+        //                 } else {
+        //                     console.log('ToWrd');
+        //                     console.log(td.firstChild);
+        //                 }
+        //             }
+        //         } else {
+        //             console.log('else');
+        //             console.log(tds[1].firstChild);
+        //         }
+        //     }
         // }
-        
-        const loadingPage = () => {
-            document.getElementById('body').innerHTML = 'Loading...';
+
+        const getFirstRowElement(firstRow) {
+            let arr = [];
+            const tdsFirstEvenRow = firstRow.getElementsByTagName('td');
+            console.log(tdsFirstEvenRow[0].firstChild.innerText); //word
+            arr += [tdsFirstEvenRow[0].firstChild.innerText]
+            console.log(tdsFirstEvenRow[1].innerText); //sinonimos
+            arr += [tdsFirstEvenRow[1].innerText]
+
+            const childsThirdTd = tdsFirstEvenRow[2].childNodes;
+            console.log(childsThirdTd[0].nodeValue);
+            arr += [childsThirdTd[0].nodeValue]
+            return arr;
         }
 
-        const main = async () => {
-            loadingPage();
-
-            const url = 'https://www.wordreference.com/enpt/home';
+        const getSentences = async (word) => {
+            const url = 'https://www.wordreference.com/enpt/' + word;
             const response = await fetch(url);
             const text = await response.text();
-
-            console.log(typeof(text));
-            // let arr = text.match(/<table(.|\n)*/g);
-            // try {
-            //     console.log(`Arr legth: ${arr.length}`);
-            //     arr.forEach(element => {
-            //    console.log(element); 
-            // });
-            // }catch{
-            //     console.log(arr);
-            // }
-
             const html = new DOMParser().parseFromString(text, "text/html");
-            const tableWRD = html.getElementsByClassName('WRD')[0];
             
-            console.log(tableWRD.getElementsByClassName('FrWrd'))
-            console.log(tableWRD.getElementsByClassName('ToWrd'))
-            
-            console.log(tableWRD.getElementsByTagName('tr'));
+            const tableWRD = html.getElementsByClassName('WRD')[0]; // what we want is in this table
+            let rows = await tableWRD.getElementsByTagName('tr');
 
+            let i = 0;
+            while(rows[i].className != 'even') i++;
+            const firstEvenRow = rows[i];
+            const tdsFirstEvenRow = rows[i].getElementsByTagName('td');
+            console.log(tdsFirstEvenRow[0].firstChild.innerText); //word
+            console.log(tdsFirstEvenRow[1].innerText); //sinonimos
+
+            const childsThirdTd = tdsFirstEvenRow[2].childNodes;
+            console.log(childsThirdTd[0].nodeValue);
+
+
+
+            // console.log(rows[i+1].getElementsByTagName('td')[1].innerText.replace(word, '<b>' + word + '</b>'));
+            console.log(rows[i+1].getElementsByTagName('td')[rows[i+1].getElementsByTagName('td').length - 1]);
+
+
+        }
+        
+        const loadingPage = () => document.getElementById('body').innerHTML = 'Loading...';
+
+        const getListOfWords = () => {
+            // TODO
+            return ['home', 'enough', 'people'];
+        }
+
+        const main = () => {
+            loadingPage();
+            const words = getListOfWords();
+            words.forEach(word => {
+                getSentences(word);
+            });
         }
 
     </script>
@@ -55,3 +108,104 @@
     <button id="start" onclick="main()">Start!</button>
 </body>
 </html>
+
+
+<!-- EXEMPLO DA PALAVRAS
+pleasent
+shivered
+nicely
+settled
+portrait
+pluzzed
+along
+altogether
+absence
+amusing
+pretence
+sympathetic
+stared
+rid
+suntanned
+pumped
+concerning
+them
+heiress
+cousin
+odd
+guilty
+nightmare
+grow
+chauffeur
+moustache
+annoyed
+whispered
+sharp
+ought
+waves
+pale
+foolish
+wreckage
+dusty
+roll
+fortunate
+though
+pale
+spare
+quiet
+ascertain
+motorway
+hostess
+lying
+mean
+spring
+swing
+branch
+tied
+relief
+unaware
+laid
+tall
+slim
+shouts
+uncle
+addict
+light-hearted
+doubt
+hush
+glance
+attractive looking
+fairly
+settled
+nodded
+inquiringly
+rubbish
+bought
+seemed
+-->
+
+<!--
+suntanned
+inquires
+madness
+glasses
+chattered
+staged
+moody
+bothered
+rescue
+thick
+suffers
+dared
+settled
+disguise
+kindly
+groans
+barmaid
+eagerly
+nightgown
+farther
+corner
+grin
+bushes
+at once
+-->
