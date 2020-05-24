@@ -78,7 +78,7 @@ const getPronounce = async pronounceCamp => {
 } 
 
 const createWordObj = async (word) => {
-    // console.log(`word: ${word}`);
+    console.log(`word: ${word}`);
 
     const wordreferenceDocument = await getDom('https://www.wordreference.com/enpt/' + word);
     const title = getTitle(wordreferenceDocument); //not so relevant 
@@ -88,18 +88,22 @@ const createWordObj = async (word) => {
         return {word, err: 1};
 
     const {similar, synonym, translation, sentence} = await getAnswer(tableAnswer);
-    // console.log(`similar: ${similar}`);
+    console.log(`similar: ${similar}`);
     
     const pronounceCamp = wordreferenceDocument.getElementsByClassName('pwrapper');
-    if(pronounceCamp == undefined || pronounceCamp.length == 0) {
+    let pronounce;
+    if((pronounceCamp == undefined || pronounceCamp.length == 0) && similar != word) {
         return {word, err: 2, drilldrop: await createWordObj(similar)};
+    } else if(pronounceCamp == undefined || pronounceCamp.length == 0) {
+        pronounce = ''
+    } else {
+        pronounce = (await getPronounce(pronounceCamp[0])).pronounce;
     }
-    const {errPronounce, pronounce} = await getPronounce(pronounceCamp[0]);
 
-    // console.log(`pronounce: ${pronounce}`);
+    console.log(`pronounce: ${pronounce}`);
 
     const wordObj = {word, title, pronounce, similar, synonym, translation, sentence} 
-    // console.log(wordObj);
+    console.log(wordObj);
     return wordObj;
 
 }
