@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>AnkiAtomation</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'> -->
+    <script src='main.js'></script>
+</head>
+<body>
+    <div id='inputsection'>
+        <p>Put the words down here and press start do search to generate anki cards</p>
+        <table>
+            <tr>
+                <th>
+                    <textarea id="words"></textarea>
+                </th>
+                <th>
+                    <button id="start" onclick="main()">Start!</button>
+                </th>
+            </tr>
+        </table>
+    </div>
+
+    <div id='outputsection'>
+        <h1 id ='successfulSectionTitle'></h1>
+        <table id='successfulSection'>
+
+        </table>
+        <h1 id='faieldSectionTitle'></h1>
+        <table id="faieldSection">
+
+        </table>
+        <!-- <audio src="https://www.wordreference.com/audio/en/us/us/en043714.mp3" controls></audio> -->
+    </div>
+
+</body>
+</html>
