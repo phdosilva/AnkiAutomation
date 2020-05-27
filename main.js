@@ -1,3 +1,6 @@
+const urlSource = 'https://www.wordreference.com/enpt/';
+const urlContextReverso = 'https://context.reverso.net/traducao/ingles-portugues/';
+
 const getWordsInput = async() => {
     const text = await document.getElementById('words');
     return text.value.split('\n');
@@ -71,7 +74,8 @@ const getPronounce = async pronounceCamp => {
         pronounce = secondMatchList[0];
     } catch {
         errPronounce = 'dontMatchWithUS';
-        pronounce = `US:`;
+        const secondMatchList = firstMatchList[0].match(/\(.*\)/);
+        pronounce = 'US: ' + secondMatchList[0];
     }    
     
     return {errPronounce, pronounce};
@@ -80,7 +84,7 @@ const getPronounce = async pronounceCamp => {
 const createWordObj = async (word) => {
     console.log(`word: ${word}`);
 
-    const wordreferenceDocument = await getDom('https://www.wordreference.com/enpt/' + word);
+    const wordreferenceDocument = await getDom(urlSource + word);
     const title = getTitle(wordreferenceDocument); //not so relevant 
     
     const tableAnswer = getTableAnswer(wordreferenceDocument);
@@ -112,6 +116,7 @@ const normalHTML = (successfulSection, element) => {
     if(element.hasOwnProperty('drilldrop')) {
         successfulSection.innerHTML += `<th>` ;
         successfulSection.innerHTML += `<h2>${element.word}</h2>` ;
+        successfulSection.innerHTML += `<h3><a href="${urlSource + element.word}" target="_blank">WordReference</a>   <a href="${urlContextReverso + element.word}" target="_blank">WordReference</a></h3>` ;
         successfulSection.innerHTML += `</th>` ;
         normalHTML(successfulSection, element.drilldrop);
         return;   
@@ -119,6 +124,7 @@ const normalHTML = (successfulSection, element) => {
 
     successfulSection.innerHTML += `<th>` ;
     successfulSection.innerHTML += `<h2>${element.word}</h2>` ;
+    successfulSection.innerHTML += `<h3><a href="${urlSource + element.word}" target="_blank">WordReference</a>   <a href="${urlContextReverso + element.word}" target="_blank">WordReference</a></h3>` ;
     successfulSection.innerHTML += element.sentence + '</br>' ;
     successfulSection.innerHTML += '<b>' + element.similar + ' ' + element.pronounce + '</b></br>';
     successfulSection.innerHTML += element.synonym + ' ' + element.translation + '</br>'
