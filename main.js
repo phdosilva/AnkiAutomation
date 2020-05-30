@@ -1,3 +1,4 @@
+const urlStandard = 'https://www.wordreference.com';
 const urlSource = 'https://www.wordreference.com/enpt/';
 const urlContextReverso = 'https://context.reverso.net/traducao/ingles-portugues/';
 
@@ -73,19 +74,47 @@ const getPronounce = async pronounceCamp => {
         const secondMatchList = firstMatchList[0].match(/\/.*\//); 
         pronounce = secondMatchList[0];
     } catch {
-        errPronounce = 'dontMatchWithUS';
-        const secondMatchList = firstMatchList[0].match(/\(.*\)/);
-        pronounce = 'US: ' + secondMatchList[0];
+        try {
+            errPronounce = 'dontMatchWithUS';
+            const secondMatchList = firstMatchList[0].match(/\(.*\)/);
+            pronounce = 'US: ' + secondMatchList[0];
+        }catch {
+            errPronounce = 'dontMatchWithUS';
+            const secondMatchList = '';
+            pronounce = 'US: ' + secondMatchList[0];
+        }
     }    
     
     return {errPronounce, pronounce};
 } 
 
+const getAudio = async wordreferenceDocument => {
+    try {
+        const audioSelection = wordreferenceDocument.getElementById('accentSelection');
+        const arr = await audioSelection.getElementsByTagName('option');
+        
+        let valueAudio;
+
+        for(let j = 0; j < arr.length; j++) {
+            if(arr[j].getAttribute('title') == 'US') {
+                valueAudio = arr[j].getAttribute('value');
+            }
+        }
+
+        const audioDom = wordreferenceDocument.getElementById('aud' + valueAudio);
+        const audioAdress = audioDom.firstChild.getAttribute('src');
+
+        return audioAdress;
+    } catch {
+        return;
+    }
+}
+
 const createWordObj = async (word) => {
     console.log(`word: ${word}`);
 
     const wordreferenceDocument = await getDom(urlSource + word);
-    const title = getTitle(wordreferenceDocument); //not so relevant 
+    const title = getTitle(wordreferenceDocument); //not so relevant     
     
     const tableAnswer = getTableAnswer(wordreferenceDocument);
     if(tableAnswer == undefined)
@@ -103,10 +132,13 @@ const createWordObj = async (word) => {
     } else {
         pronounce = (await getPronounce(pronounceCamp[0])).pronounce;
     }
-
+    
     console.log(`pronounce: ${pronounce}`);
 
-    const wordObj = {word, title, pronounce, similar, synonym, translation, sentence} 
+    const audioSource = await getAudio(wordreferenceDocument);
+
+    const wordObj = {word, title, pronounce, similar, synonym, translation, sentence, audioSource} 
+
     console.log(wordObj);
     return wordObj;
 
@@ -129,6 +161,10 @@ const normalHTML = (successfulSection, element) => {
     successfulSection.innerHTML += '<b>' + element.similar + ' ' + element.pronounce + '</b></br>';
     successfulSection.innerHTML += element.synonym + ' ' + element.translation + '</br>'
     successfulSection.innerHTML += '</br>'
+    if(element.audioSource != '' && element.audioSource != undefined) {
+        successfulSection.innerHTML += '<audio src=' + urlStandard + element.audioSource + ' controls></audio>';
+    }
+    successfulSection.innerHTML += '</br>'
     successfulSection.innerHTML += `</th>` ;
 }
 
@@ -150,6 +186,8 @@ const constructHtml = responses => {
         normalHTML(successfulSection, element);
         successfulSection.innerHTML += '</tr>';       
     });
+
+    console.log('Fiinshed!')
 }
 
 const main = async () => {    
@@ -165,3 +203,5 @@ const main = async () => {
 
     constructHtml(responses);    
 }
+
+createWordObj('groans');
