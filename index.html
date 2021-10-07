@@ -1,30 +1,40 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>AnkiAtomation</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'> -->
+    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
     <script src='main.js'></script>
 </head>
+
 <body>
-    <div id='inputsection'>
-        <p>Put the words down here and press start do search to generate anki cards</p>
-        <table>
-            <tr>
-                <th>
-                    <textarea id="words"></textarea>
-                </th>
-                <th>
-                    <button id="start" onclick="main()">Start!</button>
-                </th>
-            </tr>
-        </table>
+    <div id='inputsection' class="container">
+        <div class="col-*-*">
+            <h1>Put the words down here and press start do search to generate anki cards</h1>
+        </div>
+        <div class="col-sm-10">
+            <textarea id="words" class="form-control  input-lg"></textarea>
+        </div>
+        <div class="col-sm-2">
+            <button id="start" onclick="main()" class="btn-primary  btn-lg">Start!</button>
+        </div>
     </div>
 
-    <div id='outputsection'>
-        <h1 id ='successfulSectionTitle'></h1>
+    <div id='outputsection' class="container">
+        <h1 id='successfulSectionTitle'></h1>
         <table id='successfulSection'>
 
         </table>
@@ -33,7 +43,8 @@
 
         </table>
         <!-- <audio src="https://www.wordreference.com/audio/en/us/us/en043714.mp3" controls></audio> -->
-    </div>   
-    
+    </div>
+
 </body>
+
 </html>
